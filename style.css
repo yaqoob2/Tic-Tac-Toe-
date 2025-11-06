@@ -1,0 +1,172 @@
+/* ---------- Reset & Variables ---------- */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg1:#0f1020;
+  --bg2:#1e1f3b;
+  --glass: rgba(255,255,255,.10);
+  --glass-strong: rgba(255,255,255,.18);
+  --border: rgba(255,255,255,.25);
+  --text:#eef1f7;
+  --accent:#7c3aed;        /* purple */
+  --accent-2:#22d3ee;      /* cyan   */
+  --win:#22c55e;           /* green  */
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+/* ---------- Animated Gradient Background ---------- */
+body{
+  min-height:100svh;
+  color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; overflow-x:hidden;
+  background:
+    radial-gradient(1200px 600px at -10% -20%, #4f46e52b, transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, #22d3ee1f, transparent 55%),
+    radial-gradient(800px 600px at 50% 120%, #16a34a1a, transparent 60%),
+    linear-gradient(135deg, var(--bg1), var(--bg2));
+  position:relative;
+}
+
+/* Subtle moving sheen */
+body::before{
+  content:""; position:fixed; inset:-40% -40% auto;
+  height:200%; width:200%;
+  background: radial-gradient(60% 40% at 50% 50%, rgba(255,255,255,.06), transparent 60%);
+  filter: blur(40px);
+  animation: floatSheen 16s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes floatSheen{
+  0%{ transform: translate(-6%, -4%) rotate(0deg); }
+  100%{ transform: translate(6%, 4%) rotate(2deg); }
+}
+
+/* ---------- Layout ---------- */
+main{
+  display:flex; flex-direction:column; align-items:center; gap:18px;
+  width:min(92vw, 540px);
+  padding:24px;
+  border-radius:24px;
+  background: linear-gradient( to bottom right, var(--glass), rgba(255,255,255,.06));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border:1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+h1{
+  font-weight:800; letter-spacing:.5px; line-height:1;
+  font-size:clamp(28px, 3.6vw, 40px);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow: 0 0 24px rgba(124,58,237,.25);
+}
+
+/* ---------- Board Wrapper ---------- */
+.container{
+  display:flex; justify-content:center; align-items:center;
+  width:100%;
+}
+.game{
+  width:min(86vw, 420px);
+  aspect-ratio:1/1;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  padding:12px;
+  border-radius:20px;
+  background: linear-gradient( to bottom right, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 12px rgba(255,255,255,.05);
+}
+
+/* ---------- Cells ---------- */
+.box{
+  display:grid; place-items:center;
+  font-size:clamp(34px, 10vmin, 56px);
+  font-weight:900; letter-spacing:.5px;
+  color:#fff;
+  background: linear-gradient( to bottom right, rgba(255,255,255,.16), rgba(255,255,255,.06));
+  border:none; border-radius:18px;
+  outline:1px solid rgba(255,255,255,.20);
+  box-shadow:
+    0 10px 18px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.25);
+  cursor:pointer;
+  transition: transform .12s ease, outline-color .2s ease, box-shadow .2s ease, background .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.box:hover{ transform: translateY(-2px); }
+.box:active{ transform: translateY(0); }
+.box:disabled{
+  cursor:default; opacity:.85;
+  background: linear-gradient( to bottom right, rgba(255,255,255,.12), rgba(255,255,255,.04));
+}
+
+/* Optional: nicer colors for marks if you add classes in JS
+   .box.x { color:#f0abfc }  .box.o { color:#93c5fd } */
+
+/* Winning glow (add .win to winning cells in JS) */
+.box.win{
+  outline-color: rgba(34,197,94,.6);
+  box-shadow:
+    0 0 24px rgba(34,197,94,.45),
+    0 10px 22px rgba(34,197,94,.25),
+    inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+/* ---------- Buttons ---------- */
+#reset-btn, #new-btn{
+  padding:12px 18px;
+  font-size:16px;
+  font-weight:700;
+  color:var(--text);
+  border:none; border-radius:14px;
+  cursor:pointer;
+  background:
+    linear-gradient( to bottom right, rgba(255,255,255,.16), rgba(255,255,255,.08));
+  outline:1px solid rgba(255,255,255,.22);
+  box-shadow: 0 10px 20px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.25);
+  transition: transform .14s ease, box-shadow .2s ease, background .2s ease;
+}
+#reset-btn:hover, #new-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(0,0,0,.34);
+}
+#reset-btn:active, #new-btn:active{ transform: translateY(0); }
+
+/* Give them accent borders to stand out */
+#reset-btn{ outline-color: rgba(124,58,237,.45); }
+#new-btn{ outline-color: rgba(34,211,238,.45); }
+
+/* ---------- Winner / Message Overlay ---------- */
+.msg-container{
+  position: fixed; inset:0; z-index:10;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(10,12,22,.55), rgba(10,12,22,.75));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: fadeIn .25s ease;
+}
+#msg{
+  font-size: clamp(28px, 6.5vmin, 54px);
+  font-weight: 900; letter-spacing:.6px;
+  background: linear-gradient(90deg, #22c55e, #a3e635);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 0 22px rgba(34,197,94,.35);
+}
+.hide{ display:none !important; }
+
+@keyframes fadeIn{
+  from{ opacity:0; } to{ opacity:1; }
+}
+
+/* ---------- Small Screens ---------- */
+@media (max-width:480px){
+  .game{ gap:10px; padding:10px; }
+  .box{ border-radius:16px; }
+  main{ padding:18px; border-radius:20px; }
+}
